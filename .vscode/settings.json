@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "fastapi",
-        "pydantic"
+        "pydantic",
+        "pyenv",
+        "taskipy"
     ],
     "[python]": {
         "editor.formatOnSave": true,
