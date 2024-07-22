@@ -27,6 +27,11 @@ pre_test = 'task lint'
 test = 'pytest --cov=fastapi_zero -vv'
 post_test = 'task coverage'
 
+migrate_upgrade = 'alembic upgrade head'
+migrate_generate = 'alembic revision --autogenerate -m'
+migrate = 'task migrate_generate'
+post_migrate = 'task migrate_upgrade'
+
 coverage = 'coverage html'
 
 lint = 'ruff check . && ruff check . --diff'
