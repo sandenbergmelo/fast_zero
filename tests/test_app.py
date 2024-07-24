@@ -30,6 +30,34 @@ def test_create_user(client: TestClient):
     }
 
 
+def test_create_user_username_already_exists(client: TestClient, user):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'Test',
+            'email': 'different@email.com',
+            'password': 'does not matter',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username already exists'}
+
+
+def test_create_user_email_already_exists(client: TestClient, user):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'Different Username',
+            'email': 'test@test.com',
+            'password': 'does not matter',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Email already exists'}
+
+
 def test_read_users_empty(client: TestClient):
     response = client.get('/users')
 
