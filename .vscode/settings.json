@@ -2,6 +2,7 @@
     "cSpell.words": [
         "fastapi",
         "onupdate",
+        "poolclass",
         "pydantic",
         "pyenv",
         "sqlalchemy",

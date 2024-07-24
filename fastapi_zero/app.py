@@ -1,18 +1,19 @@
 from http import HTTPStatus
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
+from fastapi_zero.db.connection import get_session
+from fastapi_zero.db.models import User
 from fastapi_zero.schemas import (
     Message,
-    UserDB,
     UserList,
     UserPublic,
     UserSchema,
 )
 
 app = FastAPI()
-
-database: list[UserPublic] = []
 
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
@@ -21,48 +22,90 @@ def read_root():
 
 
 @app.post('/users', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-def create_user(user: UserSchema):
-    user_with_id = UserDB(id=len(database) + 1, **user.model_dump())
-    database.append(user_with_id)
+def create_user(user: UserSchema, session: Session = Depends(get_session)):
+    db_user = session.scalar(
+        select(User).where(
+            (User.username == user.username) | (User.email == user.email)
+        )
+    )
 
-    return user_with_id
+    if db_user:
+        if db_user.username == user.username:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Username already exists',
+            )
+        elif db_user.email == user.email:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Email already exists',
+            )
+
+    db_user = User(
+        username=user.username,
+        email=user.email,
+        password=user.password,
+    )
+
+    session.add(db_user)
+    session.commit()
+
+    session.refresh(db_user)
+
+    return db_user
 
 
 @app.get('/users', response_model=UserList)
-def read_users():
-    return {'users': database}
+def read_users(
+    limit: int = 10, offset: int = 0, session: Session = Depends(get_session)
+):
+    users = session.scalars(select(User).limit(limit).offset(offset))
+    return {'users': users}
 
 
 @app.get('/users/{id}', response_model=UserPublic)
-def get_user_by_id(id: int):
-    if id < 1 or id > len(database):
+def get_user_by_id(id: int, session: Session = Depends(get_session)):
+    user = session.get(User, id)
+
+    if not user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
         )
 
-    return database[id - 1]
+    return user
 
 
 @app.put('/users/{id}', response_model=UserPublic)
-def update_users(id: int, user: UserSchema):
-    if id < 1 or id > len(database):
+def update_users(
+    id: int, user: UserSchema, session: Session = Depends(get_session)
+):
+    db_user = session.get(User, id)
+
+    if not db_user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
         )
 
-    user_with_id = UserDB(id=id, **user.model_dump())
-    database[id - 1] = user_with_id
+    db_user.username = user.username
+    db_user.email = user.email
+    db_user.password = user.password
 
-    return user_with_id
+    session.commit()
+    session.refresh(db_user)
+
+    return db_user
 
 
 @app.delete('/users/{id}', response_model=Message)
-def delete_users(id: int):
-    if id < 1 or id > len(database):
+def delete_users(id: int, session: Session = Depends(get_session)):
+    db_user = session.get(User, id)
+
+    if not db_user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
         )
 
-    del database[id - 1]
+    session.delete(db_user)
+    session.commit()
 
     return {'message': 'User deleted'}
