@@ -21,10 +21,27 @@ poetry shell
 ### Sobre os comandos:
 Os comandos para executar funções do projeto são feitos com o [taskipy](https://github.com/taskipy/taskipy):
 ```bash
-task --list     # Lista os comandos disponíveis
-task dev        # Roda o servidor de desenvolvimento
-task test       # Roda os testes
-task lint       # Roda o linter
-task lint --fix # Roda o linter e tenta corrigir os problemas
-task format     # Formata o código
+task --list           # Lista os comandos disponíveis
+task migrate_generate # Gera arquivos de migração do banco de dados
+task migrate_upgrade  # Executa as migrações do banco de dados
+task migrate          # Gera e executa as migrações do banco de dados
+task dev              # Roda o servidor de desenvolvimento
+task test             # Roda os testes
+task lint             # Roda o linter
+task lint --fix       # Roda o linter e tenta corrigir os problemas
+task format           # Formata o código
+```
+
+### Setup para rodar o projeto:
+Crie um arquivo `.env` na raiz do projeto.
+
+Você pode copiar o conteúdo do arquivo `.env.example` e ajustar as variáveis de ambiente:
+```bash
+DATABASE_URL='sqlite:///database.db'
+```
+
+#### Para rodar o projeto:
+```bash
+task migrate_upgrade # Executa as migrações do banco de dados
+task dev             # Roda o servidor de desenvolvimento
 ```
