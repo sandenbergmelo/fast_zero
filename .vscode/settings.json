@@ -3,6 +3,7 @@
         "fastapi",
         "onupdate",
         "poolclass",
+        "pwdlib",
         "pydantic",
         "pyenv",
         "sqlalchemy",
