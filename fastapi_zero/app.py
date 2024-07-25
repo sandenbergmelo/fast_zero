@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -8,11 +9,17 @@ from fastapi_zero.db.connection import get_session
 from fastapi_zero.db.models import User
 from fastapi_zero.schemas import (
     Message,
+    Token,
     UserList,
     UserPublic,
     UserSchema,
 )
-from fastapi_zero.security import get_password_hash
+from fastapi_zero.security import (
+    create_access_token,
+    get_current_user,
+    get_password_hash,
+    verify_password,
+)
 
 app = FastAPI()
 
@@ -58,7 +65,9 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
 
 @app.get('/users', response_model=UserList)
 def read_users(
-    limit: int = 10, offset: int = 0, session: Session = Depends(get_session)
+    limit: int = 10,
+    offset: int = 0,
+    session: Session = Depends(get_session),
 ):
     users = session.scalars(select(User).limit(limit).offset(offset))
     return {'users': users}
@@ -78,35 +87,61 @@ def get_user_by_id(id: int, session: Session = Depends(get_session)):
 
 @app.put('/users/{id}', response_model=UserPublic)
 def update_users(
-    id: int, user: UserSchema, session: Session = Depends(get_session)
+    id: int,
+    user: UserSchema,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
-    db_user = session.get(User, id)
-
-    if not db_user:
+    if id != current_user.id:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
+            status_code=HTTPStatus.BAD_REQUEST, detail='Not enough permission'
         )
 
-    db_user.username = user.username
-    db_user.email = user.email
-    db_user.password = get_password_hash(user.password)
+    current_user.username = user.username
+    current_user.email = user.email
+    current_user.password = get_password_hash(user.password)
 
     session.commit()
-    session.refresh(db_user)
+    session.refresh(current_user)
 
-    return db_user
+    return current_user
 
 
 @app.delete('/users/{id}', response_model=Message)
-def delete_users(id: int, session: Session = Depends(get_session)):
-    db_user = session.get(User, id)
+def delete_users(
+    id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    if id != current_user.id:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail='Not enough permission'
+        )
 
-    if not db_user:
+    session.delete(current_user)
+    session.commit()
+
+    return {'message': 'User deleted'}
+
+
+@app.post('/token', response_model=Token)
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(get_session),
+):
+    user = session.scalar(select(User).where(User.email == form_data.username))
+
+    if not user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
         )
 
-    session.delete(db_user)
-    session.commit()
+    if not verify_password(form_data.password, user.password):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Incorrect email or password',
+        )
 
-    return {'message': 'User deleted'}
+    access_token = create_access_token({'sub': user.email})
+
+    return {'access_token': access_token, 'token_type': 'Bearer'}
