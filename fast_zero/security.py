@@ -10,8 +10,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from zoneinfo import ZoneInfo
 
-from fastapi_zero.db.connection import get_session
-from fastapi_zero.db.models import User
+from fast_zero.db.connection import get_session
+from fast_zero.db.models import User
 
 pwd_context = PasswordHash.recommended()
 

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from fastapi_zero.db.models import User
+from fast_zero.db.models import User
 
 
 def test_create_user(session: Session):
