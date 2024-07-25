@@ -1,6 +1,5 @@
-from http import HTTPStatus
-
 import jwt
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from fast_zero.security import ALGORITHM, SECRET_KEY, create_access_token
@@ -23,7 +22,7 @@ def test_get_token(client: TestClient, user):
 
     token = response.json()
 
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == status.HTTP_200_OK
     assert token['token_type'] == 'Bearer'
     assert token['access_token']
 
@@ -33,5 +32,5 @@ def test_invalid_token(client: TestClient):
         '/users/1', headers={'Authorization': 'Bearer invalid-token'}
     )
 
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}

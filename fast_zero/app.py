@@ -1,6 +1,4 @@
-from http import HTTPStatus
-
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,12 +22,14 @@ from fast_zero.security import (
 app = FastAPI()
 
 
-@app.get('/', status_code=HTTPStatus.OK, response_model=Message)
+@app.get('/', status_code=status.HTTP_200_OK, response_model=Message)
 def read_root():
     return {'message': 'Hello, World'}
 
 
-@app.post('/users', status_code=HTTPStatus.CREATED, response_model=UserPublic)
+@app.post(
+    '/users', status_code=status.HTTP_201_CREATED, response_model=UserPublic
+)
 def create_user(user: UserSchema, session: Session = Depends(get_session)):
     db_user = session.scalar(
         select(User).where(
@@ -40,12 +40,12 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
     if db_user:
         if db_user.username == user.username:
             raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Username already exists',
             )
         elif db_user.email == user.email:
             raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Email already exists',
             )
 
@@ -79,7 +79,7 @@ def get_user_by_id(id: int, session: Session = Depends(get_session)):
 
     if not user:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
+            status_code=status.HTTP_404_NOT_FOUND, detail='User not found'
         )
 
     return user
@@ -94,7 +94,8 @@ def update_users(
 ):
     if id != current_user.id:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail='Not enough permission'
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Not enough permission',
         )
 
     current_user.username = user.username
@@ -115,7 +116,8 @@ def delete_users(
 ):
     if id != current_user.id:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail='Not enough permission'
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Not enough permission',
         )
 
     session.delete(current_user)
@@ -133,12 +135,12 @@ def login_for_access_token(
 
     if not user:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
+            status_code=status.HTTP_404_NOT_FOUND, detail='User not found'
         )
 
     if not verify_password(form_data.password, user.password):
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail='Incorrect email or password',
         )
 
