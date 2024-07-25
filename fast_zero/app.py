@@ -5,16 +5,16 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from fastapi_zero.db.connection import get_session
-from fastapi_zero.db.models import User
-from fastapi_zero.schemas import (
+from fast_zero.db.connection import get_session
+from fast_zero.db.models import User
+from fast_zero.schemas import (
     Message,
     Token,
     UserList,
     UserPublic,
     UserSchema,
 )
-from fastapi_zero.security import (
+from fast_zero.security import (
     create_access_token,
     get_current_user,
     get_password_hash,
