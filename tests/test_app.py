@@ -149,5 +149,5 @@ def test_delete_not_found_user(client: TestClient, user, token):
         headers={'Authorization': f'Bearer {token}'},
     )
 
-    # assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {'detail': 'User not found'}
