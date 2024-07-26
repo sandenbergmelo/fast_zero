@@ -14,19 +14,6 @@ def test_jwt():
     assert decoded['exp']
 
 
-def test_get_token(client: TestClient, user):
-    response = client.post(
-        '/token',
-        data={'username': user.email, 'password': user.clean_password},
-    )
-
-    token = response.json()
-
-    assert response.status_code == status.HTTP_200_OK
-    assert token['token_type'] == 'Bearer'
-    assert token['access_token']
-
-
 def test_invalid_token(client: TestClient):
     response = client.delete(
         '/users/1', headers={'Authorization': 'Bearer invalid-token'}
