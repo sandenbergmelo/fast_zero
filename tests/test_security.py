@@ -2,13 +2,14 @@ import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from fast_zero.security import ALGORITHM, SECRET_KEY, create_access_token
+from fast_zero.security import create_access_token
+from fast_zero.settings import env
 
 
 def test_jwt():
     data = {'sub': 'test@test.com'}
     token = create_access_token(data)
-    decoded = jwt.decode(token, SECRET_KEY, [ALGORITHM])
+    decoded = jwt.decode(token, env.SECRET_KEY, [env.ALGORITHM])
 
     assert decoded['sub'] == data['sub']
     assert decoded['exp']
