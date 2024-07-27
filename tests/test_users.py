@@ -99,6 +99,21 @@ def test_update_users(client: TestClient, user, token):
     }
 
 
+def test_update_wrong_users(client: TestClient, user, token):
+    response = client.put(
+        f'/users/{user.id + 1}',
+        headers={'Authorization': f'Bearer {token}'},
+        json={
+            'username': 'Hello',
+            'email': 'hello@world.com',
+            'password': '123',
+        },
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permission'}
+
+
 def test_update_not_found_user(client: TestClient, user, token):
     # Delete the user before the test
     client.delete(
@@ -128,6 +143,16 @@ def test_delete_users(client: TestClient, user, token):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {'message': 'User deleted'}
+
+
+def test_delete_wrong_users(client: TestClient, user, token):
+    response = client.delete(
+        f'/users/{user.id + 1}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permission'}
 
 
 def test_delete_not_found_user(client: TestClient, user, token):
