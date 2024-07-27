@@ -13,12 +13,7 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 def login_for_access_token(session: T_Session, form_data: T_OAuthForm):
     user = session.scalar(select(User).where(User.email == form_data.username))
 
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found'
-        )
-
-    if not verify_password(form_data.password, user.password):
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Incorrect email or password',
