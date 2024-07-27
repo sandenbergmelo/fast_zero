@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
-from fast_zero.db.connection import get_session
+from fast_zero.custom_types.annotated_types import T_CurrentUser, T_Session
 from fast_zero.db.models import User
 from fast_zero.schemas import Message, UserList, UserPublic, UserSchema
-from fast_zero.security import get_current_user, get_password_hash
+from fast_zero.security import get_password_hash
 
 router = APIRouter(prefix='/users', tags=['users'])
 
@@ -13,7 +12,7 @@ router = APIRouter(prefix='/users', tags=['users'])
 @router.post(
     '/', status_code=status.HTTP_201_CREATED, response_model=UserPublic
 )
-def create_user(user: UserSchema, session: Session = Depends(get_session)):
+def create_user(user: UserSchema, session: T_Session):
     db_user = session.scalar(
         select(User).where(
             (User.username == user.username) | (User.email == user.email)
@@ -47,17 +46,13 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
 
 
 @router.get('/', response_model=UserList)
-def read_users(
-    limit: int = 10,
-    offset: int = 0,
-    session: Session = Depends(get_session),
-):
+def read_users(session: T_Session, limit: int = 10, offset: int = 0):
     users = session.scalars(select(User).limit(limit).offset(offset))
     return {'users': users}
 
 
 @router.get('/{id}', response_model=UserPublic)
-def get_user_by_id(id: int, session: Session = Depends(get_session)):
+def get_user_by_id(id: int, session: T_Session):
     user = session.get(User, id)
 
     if not user:
@@ -72,8 +67,8 @@ def get_user_by_id(id: int, session: Session = Depends(get_session)):
 def update_user(
     id: int,
     user: UserSchema,
-    session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    session: T_Session,
+    current_user: T_CurrentUser,
 ):
     if id != current_user.id:
         raise HTTPException(
@@ -94,8 +89,8 @@ def update_user(
 @router.delete('/{id}', response_model=Message)
 def delete_user(
     id: int,
-    session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    session: T_Session,
+    current_user: T_CurrentUser,
 ):
     if id != current_user.id:
         raise HTTPException(
