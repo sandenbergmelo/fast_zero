@@ -54,7 +54,7 @@ def get_current_user(
         payload = jwt.decode(token, env.SECRET_KEY, [env.ALGORITHM])
         username: str = payload['sub']
 
-        if not username:  # pragma: no cover
+        if not username:
             raise credentials_exception
 
     except PyJWTError:

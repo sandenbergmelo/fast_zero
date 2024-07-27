@@ -22,3 +22,14 @@ def test_invalid_token(client: TestClient):
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_token_without_sub(client: TestClient):
+    token = create_access_token({'sub': ''})
+
+    response = client.delete(
+        '/users/1', headers={'Authorization': f'Bearer {token}'}
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
