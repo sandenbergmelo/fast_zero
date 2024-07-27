@@ -11,9 +11,14 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 
 @router.post('/token', response_model=Token)
 def login_for_access_token(session: T_Session, form_data: T_OAuthForm):
-    user = session.scalar(select(User).where(User.email == form_data.username))
+    form_username, form_password = (
+        form_data.username.lower(),
+        form_data.password,
+    )
 
-    if not user or not verify_password(form_data.password, user.password):
+    user = session.scalar(select(User).where(User.email == form_username))
+
+    if not user or not verify_password(form_password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Incorrect email or password',
