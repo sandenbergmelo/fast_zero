@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "fastapi",
+        "freezegun",
         "onupdate",
         "poolclass",
         "pwdlib",

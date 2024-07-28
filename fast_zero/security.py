@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
+from typing import Any
 
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import PyJWTError
+from jwt.exceptions import ExpiredSignatureError, PyJWTError
 from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -12,6 +13,17 @@ from zoneinfo import ZoneInfo
 from fast_zero.db.connection import get_session
 from fast_zero.db.models import User
 from fast_zero.settings import env
+
+
+class CredentialsException(HTTPException):
+    def __init__(
+        self,
+        status_code: int = status.HTTP_401_UNAUTHORIZED,
+        detail: Any = 'Could not validate credentials',
+        headers: dict[str, str] | None = {'WWW-Authenticate': 'Bearer'},
+    ) -> None:
+        super().__init__(status_code, detail, headers)
+
 
 pwd_context = PasswordHash.recommended()
 
@@ -44,21 +56,18 @@ def get_current_user(
     session: Session = Depends(get_session),
     token: str = Depends(oauth2_scheme),
 ):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
-    )
-
     try:
         payload = jwt.decode(token, env.SECRET_KEY, [env.ALGORITHM])
         username: str = payload['sub']
 
         if not username:
-            raise credentials_exception
+            raise CredentialsException()
+
+    except ExpiredSignatureError:
+        raise CredentialsException(detail='Token has expired')
 
     except PyJWTError:
-        raise credentials_exception
+        raise CredentialsException()
 
     user = session.scalar(select(User).where(User.email == username))
 
