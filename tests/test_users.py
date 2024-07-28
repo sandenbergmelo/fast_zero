@@ -26,7 +26,7 @@ def test_create_user_username_already_exists(client: TestClient, user):
     response = client.post(
         '/users',
         json={
-            'username': 'Test',
+            'username': user.username,
             'email': 'different@email.com',
             'password': 'does not matter',
         },
@@ -41,7 +41,7 @@ def test_create_user_email_already_exists(client: TestClient, user):
         '/users',
         json={
             'username': 'Different Username',
-            'email': 'test@test.com',
+            'email': user.email,
             'password': 'does not matter',
         },
     )
@@ -57,12 +57,14 @@ def test_read_users_empty(client: TestClient):
     assert response.json() == {'users': []}
 
 
-def test_read_users_with_user(client: TestClient, user):
+def test_read_users_with_users(client: TestClient, user, other_user):
     user_schema = UserPublic.model_validate(user).model_dump()
+    other_user_schema = UserPublic.model_validate(other_user).model_dump()
+
     response = client.get('/users')
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {'users': [user_schema]}
+    assert response.json() == {'users': [user_schema, other_user_schema]}
 
 
 def test_get_user_by_id(client: TestClient, user):
@@ -99,9 +101,9 @@ def test_update_users(client: TestClient, user, token):
     }
 
 
-def test_update_wrong_users(client: TestClient, user, token):
+def test_update_wrong_users(client: TestClient, other_user, token):
     response = client.put(
-        f'/users/{user.id + 1}',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'Hello',
@@ -122,7 +124,7 @@ def test_update_not_found_user(client: TestClient, user, token):
     )
 
     response = client.put(
-        '/users/1',
+        f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'Hello',
@@ -145,9 +147,9 @@ def test_delete_users(client: TestClient, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_wrong_users(client: TestClient, user, token):
+def test_delete_wrong_users(client: TestClient, other_user, token):
     response = client.delete(
-        f'/users/{user.id + 1}',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
 
@@ -163,7 +165,7 @@ def test_delete_not_found_user(client: TestClient, user, token):
     )
 
     response = client.delete(
-        '/users/1',
+        f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
 
