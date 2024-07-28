@@ -72,8 +72,6 @@ def get_current_user(
     user = session.scalar(select(User).where(User.email == username))
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found'
-        )
+        raise CredentialsException()
 
     return user

@@ -116,27 +116,6 @@ def test_update_wrong_users(client: TestClient, other_user, token):
     assert response.json() == {'detail': 'Not enough permission'}
 
 
-def test_update_not_found_user(client: TestClient, user, token):
-    # Delete the user before the test
-    client.delete(
-        f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
-    )
-
-    response = client.put(
-        f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
-        json={
-            'username': 'Hello',
-            'email': 'hello@world.com',
-            'password': '123',
-        },
-    )
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
-
-
 def test_delete_users(client: TestClient, user, token):
     response = client.delete(
         f'/users/{user.id}',
@@ -155,19 +134,3 @@ def test_delete_wrong_users(client: TestClient, other_user, token):
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {'detail': 'Not enough permission'}
-
-
-def test_delete_not_found_user(client: TestClient, user, token):
-    # Delete the user before the test
-    client.delete(
-        f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
-    )
-
-    response = client.delete(
-        f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
-    )
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
