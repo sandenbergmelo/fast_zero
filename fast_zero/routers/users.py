@@ -3,8 +3,8 @@ from sqlalchemy import select
 
 from fast_zero.custom_types.annotated_types import T_CurrentUser, T_Session
 from fast_zero.db.models import User
-from fast_zero.schemas import Message, UserList, UserPublic, UserSchema
-from fast_zero.security import get_password_hash
+from fast_zero.helpers.security import get_password_hash
+from fast_zero.schemas.schemas import Message, UserList, UserPublic, UserSchema
 
 router = APIRouter(prefix='/users', tags=['users'])
 

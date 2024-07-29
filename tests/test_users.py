@@ -1,7 +1,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from fast_zero.schemas import UserPublic
+from fast_zero.schemas.schemas import UserPublic
 
 
 def test_create_user(client: TestClient):

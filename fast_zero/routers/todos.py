@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from fast_zero.custom_types.annotated_types import T_CurrentUser, T_Session
 from fast_zero.db.models import Todo, TodoState
-from fast_zero.schemas import (
+from fast_zero.schemas.schemas import (
     Message,
     TodoList,
     TodoPublic,

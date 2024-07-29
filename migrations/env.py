@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from fast_zero.settings import env
+from fast_zero.helpers.settings import env
 from fast_zero.db.models import table_registry
 
 from alembic import context

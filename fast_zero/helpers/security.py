@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 
 from fast_zero.db.connection import get_session
 from fast_zero.db.models import User
-from fast_zero.settings import env
+from fast_zero.helpers.settings import env
 
 
 class CredentialsException(HTTPException):

@@ -2,8 +2,8 @@ import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from fast_zero.security import create_access_token
-from fast_zero.settings import env
+from fast_zero.helpers.security import create_access_token
+from fast_zero.helpers.settings import env
 
 
 def test_jwt():
