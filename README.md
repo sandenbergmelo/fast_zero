@@ -42,6 +42,7 @@ DATABASE_URL='sqlite:///database.db'
 
 #### Para rodar o projeto:
 ```bash
-task migrate_upgrade # Executa as migrações do banco de dados
-task dev             # Roda o servidor de desenvolvimento
+docker compose up fastzero_database -d # Inicia o banco de dados
+task migrate_upgrade                   # Executa as migrações do banco de dados
+task dev                               # Roda o servidor de desenvolvimento
 ```

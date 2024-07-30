@@ -1,14 +1,17 @@
 {
     "cSpell.words": [
         "fastapi",
+        "fastzero",
         "freezegun",
         "onupdate",
         "poolclass",
+        "psycopg",
         "pwdlib",
         "pydantic",
         "pyenv",
         "sqlalchemy",
-        "taskipy"
+        "taskipy",
+        "testcontainers"
     ],
     "[python]": {
         "editor.formatOnSave": true,
