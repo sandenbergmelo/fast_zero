@@ -37,7 +37,10 @@ Crie um arquivo `.env` na raiz do projeto.
 
 Você pode copiar o conteúdo do arquivo `.env.example` e ajustar as variáveis de ambiente:
 ```bash
-DATABASE_URL='sqlite:///database.db'
+DATABASE_URL="postgresql+psycopg://app_user:app_password@localhost:5432/app_db"
+SECRET_KEY="super-secret-key"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
 #### Para rodar o projeto:
