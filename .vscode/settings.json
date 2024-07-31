@@ -4,6 +4,7 @@
         "fastzero",
         "freezegun",
         "onupdate",
+        "pipx",
         "poolclass",
         "psycopg",
         "pwdlib",

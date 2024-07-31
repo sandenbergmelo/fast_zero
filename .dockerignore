@@ -3,6 +3,9 @@
 .gitignore
 .gitattributes
 
+# Github
+.github/
+
 
 # CI
 .codeclimate.yml
