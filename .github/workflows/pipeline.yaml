@@ -27,4 +27,4 @@ jobs:
         run: uv sync
 
       - name: Executar testes
-        run: uv run task test
+        run: uv run task only_test

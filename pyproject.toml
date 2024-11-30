@@ -34,6 +34,7 @@ dev = 'fastapi dev fast_zero/app.py'
 pre_test = 'task lint'
 test = 'pytest --cov=fast_zero -vv'
 post_test = 'task coverage'
+only_test = 'task lint && pytest'
 
 migrate_upgrade = 'alembic upgrade head'
 migrate_generate = 'alembic revision --autogenerate -m'
