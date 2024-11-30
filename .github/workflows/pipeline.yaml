@@ -20,11 +20,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Instalar o Poetry
-        run: pipx install poetry
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Instalar dependências
-        run: poetry install
+        run: uv sync
 
       - name: Executar testes
-        run: poetry run task test
+        run: uv run task test
