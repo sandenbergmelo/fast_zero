@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -8,7 +9,6 @@ from jwt.exceptions import ExpiredSignatureError, PyJWTError
 from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from zoneinfo import ZoneInfo
 
 from fast_zero.db.connection import get_session
 from fast_zero.db.models import User
