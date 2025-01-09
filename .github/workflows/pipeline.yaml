@@ -2,7 +2,7 @@ name: Pipeline
 on: [push, pull_request]
 
 jobs:
-  test:
+  run-tests:
     runs-on: ubuntu-latest
 
     env:
@@ -13,15 +13,18 @@ jobs:
 
     steps:
       - name: Copiar os arquivos do repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar o Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Instalar uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-suffix: 'uv-cache'
 
       - name: Instalar dependências
         run: uv sync
