@@ -4,6 +4,7 @@
         "fastapi",
         "fastzero",
         "freezegun",
+        "htmlcov",
         "onupdate",
         "pipx",
         "poolclass",
