@@ -16,7 +16,8 @@
         "pythonpath",
         "sqlalchemy",
         "taskipy",
-        "testcontainers"
+        "testcontainers",
+        "todostate"
     ],
     "[python]": {
         "editor.formatOnSave": true,

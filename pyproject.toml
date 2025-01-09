@@ -41,6 +41,8 @@ migrate_generate = 'alembic revision --autogenerate -m'
 migrate = 'task migrate_generate'
 post_migrate = 'task migrate_upgrade'
 
+seed = 'python fast_zero/db/seed.py'
+
 coverage = 'coverage html'
 
 lint = 'ruff check . && ruff check . --diff'
