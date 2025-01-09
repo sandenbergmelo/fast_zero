@@ -1,16 +1,12 @@
-import sys
 from pathlib import Path
 
 import alembic
 import alembic.command
+import factory
+import factory.fuzzy
 from alembic.config import Config
 from rich import print
 from sqlalchemy import text
-
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-
-import factory
-import factory.fuzzy
 
 from fast_zero.db.connection import get_session
 from fast_zero.db.models import Todo, TodoState, User
@@ -38,7 +34,9 @@ class TodoFactory(factory.Factory):
     user_id = factory.fuzzy.FuzzyInteger(1, 5)
 
 
-alembic_config = Config(Path(__file__).parent.parent.parent / 'alembic.ini')
+alembic_config = Config(
+    Path(__file__).parent.parent.parent.parent / 'alembic.ini'
+)
 session = next(get_session())
 
 # Delete all tables

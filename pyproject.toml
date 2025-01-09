@@ -1,17 +1,17 @@
 [project]
 name = "fast-zero"
-version = "0.1.0"
-description = ""
+version = "0.0.1"
 readme = "README.md"
+authors = [{ name = "Sandenberg Ferreira Melo" }]
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.14.0",
-    "fastapi[standard]>=0.115.5",
+    "fastapi[standard]>=0.115.6",
     "psycopg[binary]>=3.2.3",
     "pwdlib[argon2]>=0.2.1",
-    "pydantic-settings>=2.6.1",
+    "pydantic-settings>=2.7.1",
     "pyjwt>=2.10.1",
-    "python-multipart>=0.0.18",
+    "python-multipart>=0.0.20",
     "sqlalchemy>=2.0.36",
 ]
 
@@ -19,17 +19,21 @@ dependencies = [
 dev = [
     "factory-boy>=3.3.1",
     "freezegun>=1.5.1",
-    "pytest>=8.3.3",
+    "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
-    "ruff>=0.8.1",
-    "sqlalchemy>=2.0.36",
+    "ruff>=0.8.6",
     "taskipy>=1.14.1",
-    "testcontainers>=4.8.2",
+    "testcontainers>=4.9.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 
 [tool.taskipy.tasks]
-dev = 'fastapi dev fast_zero/app.py'
+dev = 'fastapi dev src/fast_zero/app.py'
+start = 'fastapi run src/fast_zero/app.py'
 
 pre_test = 'task lint'
 test = 'pytest --cov=fast_zero -vv'
@@ -41,7 +45,7 @@ migrate_generate = 'alembic revision --autogenerate -m'
 migrate = 'task migrate_generate'
 post_migrate = 'task migrate_upgrade'
 
-seed = 'python fast_zero/db/seed.py'
+seed = 'python src/fast_zero/db/seed.py'
 
 coverage = 'coverage html'
 
