@@ -1,8 +1,10 @@
 {
     "cSpell.words": [
+        "addopts",
         "fastapi",
         "fastzero",
         "freezegun",
+        "htmlcov",
         "onupdate",
         "pipx",
         "poolclass",
@@ -10,9 +12,13 @@
         "pwdlib",
         "pydantic",
         "pyenv",
+        "pyjwt",
+        "pytest",
+        "pythonpath",
         "sqlalchemy",
         "taskipy",
-        "testcontainers"
+        "testcontainers",
+        "todostate"
     ],
     "[python]": {
         "editor.formatOnSave": true,

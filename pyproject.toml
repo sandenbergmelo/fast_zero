@@ -1,43 +1,52 @@
-[tool.poetry]
+[project]
 name = "fast-zero"
-version = "0.1.0"
-description = ""
-authors = [
-    "Sandenberg Ferreira Melo <77549672+sandenbergmelo@users.noreply.github.com>",
-]
+version = "0.0.1"
 readme = "README.md"
+authors = [{ name = "Sandenberg Ferreira Melo" }]
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.14.0",
+    "fastapi[standard]>=0.115.6",
+    "psycopg[binary]>=3.2.3",
+    "pwdlib[argon2]>=0.2.1",
+    "pydantic-settings>=2.7.1",
+    "pyjwt>=2.10.1",
+    "python-multipart>=0.0.20",
+    "sqlalchemy>=2.0.36",
+]
 
-[tool.poetry.dependencies]
-python = "3.12.*"
-fastapi = "^0.111.1"
-sqlalchemy = "^2.0.31"
-pydantic-settings = "^2.3.4"
-alembic = "^1.13.2"
-pwdlib = { extras = ["argon2"], version = "^0.2.0" }
-python-multipart = "^0.0.9"
-pyjwt = "^2.8.0"
-psycopg = {extras = ["binary"], version = "^3.2.1"}
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.1",
+    "freezegun>=1.5.1",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.9.0",
+    "taskipy>=1.14.1",
+    "testcontainers>=4.9.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.1"
-taskipy = "^1.13.0"
-pytest-cov = "^5.0.0"
-factory-boy = "^3.3.0"
-freezegun = "^1.5.1"
-testcontainers = "^4.7.2"
-ruff = "^0.8.1"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 
 [tool.taskipy.tasks]
-dev = 'fastapi dev fast_zero/app.py'
+dev = 'fastapi dev src/fast_zero/app.py'
+start = 'fastapi run src/fast_zero/app.py'
 
 pre_test = 'task lint'
 test = 'pytest --cov=fast_zero -vv'
 post_test = 'task coverage'
+only_test = 'task lint && pytest'
+clean = 'rm -rf .coverage htmlcov .pytest_cache .ruff_cache'
 
 migrate_upgrade = 'alembic upgrade head'
 migrate_generate = 'alembic revision --autogenerate -m'
 migrate = 'task migrate_generate'
 post_migrate = 'task migrate_upgrade'
+
+seed = 'python src/fast_zero/db/seed.py'
 
 coverage = 'coverage html'
 
@@ -59,7 +68,3 @@ select = ['I', 'F', 'E', 'W', 'PL', 'PT']
 [tool.ruff.format]
 preview = true
 quote-style = 'single'
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
