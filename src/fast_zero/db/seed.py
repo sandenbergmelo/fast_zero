@@ -6,11 +6,12 @@ import factory
 import factory.fuzzy
 from alembic.config import Config
 from rich import print
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
-from fast_zero.db.connection import get_session
 from fast_zero.db.models import Todo, TodoState, User
 from fast_zero.helpers.security import get_password_hash
+from fast_zero.helpers.settings import env
 
 
 class UserFactory(factory.Factory):
@@ -37,7 +38,10 @@ class TodoFactory(factory.Factory):
 alembic_config = Config(
     Path(__file__).parent.parent.parent.parent / 'alembic.ini'
 )
-session = next(get_session())
+
+engine = create_engine(env.DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session = SessionLocal()
 
 # Delete all tables
 print('[bold yellow]Dropping database...[/]')

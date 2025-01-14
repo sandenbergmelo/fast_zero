@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "addopts",
+        "autoflush",
         "fastapi",
         "fastzero",
         "freezegun",
@@ -15,6 +16,7 @@
         "pyjwt",
         "pytest",
         "pythonpath",
+        "sessionmaker",
         "sqlalchemy",
         "taskipy",
         "testcontainers",
