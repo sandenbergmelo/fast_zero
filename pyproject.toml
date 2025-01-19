@@ -58,6 +58,9 @@ format = 'ruff check . --fix && ruff format .'
 pythonpath = '.'
 addopts = '-p no:warnings'
 
+[tool.coverage.run]
+omit = ['src/fast_zero/db/seed.py']
+
 [tool.ruff]
 line-length = 79
 extend-exclude = ['migrations']
